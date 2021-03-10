@@ -35,19 +35,6 @@ class KakaopayserverApplicationTests {
 	}
 	
 	@SuppressWarnings("deprecation")
-	public void setProduct() throws Exception {
-		/**
-		 * step 1. product 생성
-		 */
-		mockMvc.perform(post("/products")
-					.contentType(MediaType.APPLICATION_JSON)
-					.characterEncoding("UTF-8")
-					.accept(MediaType.APPLICATION_JSON_UTF8_VALUE)
-				).andDo(print())
-				.andExpect(status().isOk());
-	}
-	
-	@SuppressWarnings("deprecation")
 	@Test
 	@Order(3)
 	public void getProducts() throws JsonProcessingException, Exception {
@@ -64,7 +51,7 @@ class KakaopayserverApplicationTests {
 	}
 	
 	@SuppressWarnings("deprecation")
-	@Test
+//	@Test
 	@Order(2)
 	public void getInvest() throws JsonProcessingException, Exception {
 		HttpHeaders httpHeaders = new HttpHeaders();
@@ -97,8 +84,6 @@ class KakaopayserverApplicationTests {
 	@Test
 	@Order(1)
 	public void makeInvest() throws JsonProcessingException, Exception {
-		setProduct();
-		
 		InvestRequestVO request = new InvestRequestVO();
 		request.setAmount(500);
 		request.setProductId((long) 1);

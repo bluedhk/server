@@ -20,6 +20,8 @@ import com.kakao.pay.model.Product;
 import com.kakao.pay.repository.InvestRepository;
 import com.kakao.pay.repository.ProductRepository;
 import com.kakao.pay.vo.InvestRequestVO;
+import com.kakao.pay.vo.InvestResponseVO;
+import com.kakao.pay.vo.ProductResponseVO;
 
 @Service
 public class InvestService {
@@ -33,74 +35,27 @@ public class InvestService {
 		this.investRepository = investRepository;
 	}
 
-	public List<Product> saveProduct() {
-		Product p1 = new Product();
-		Product p2 = new Product();
 
-		ZonedDateTime now = ZonedDateTime.now();
-
-		p1.setFinishedAt(Date.from(now.plusMinutes(5).toInstant()));
-		p1.setStartedAt(Date.from(now.toInstant()));
-		p1.setTitle("개인신용 포트폴리오");
-		p1.setTotalInvestingAmount(1000);
-
-		p2.setFinishedAt(Date.from(now.plusMinutes(5).toInstant()));
-		p2.setStartedAt(Date.from(now.toInstant()));
-		p2.setTitle("부동산 포트폴리오");
-		p2.setTotalInvestingAmount(1000000);
-
-		productRepository.save(p1);
-		productRepository.save(p2);
-
-		List<Product> products = getProducts();
-		return products;
-	}
-
-	public List<Product> getProducts() {
-
-		ZonedDateTime now = ZonedDateTime.now();
-		List<Product> products = productRepository.findAll();
-		products.removeIf(p -> p.getStartedAt().after(Date.from(now.toInstant()))
-				|| p.getFinishedAt().before(Date.from(now.toInstant())));
-
-		for (Product p : products) {
-			List<Invest> invests = investRepository.findByProductId(p.getProductId());
-			int total = p.getTotalInvestingAmount();
-			int subTotal = 0;
-			for (Invest i : invests) {
-				subTotal += i.getAmount();
-			}
-			p.setInvestCount(invests.size());
-			p.setInvestSubTotal(subTotal);
-
-			boolean state = false;
-			if (total > subTotal) {
-				state = true;
-			}
-			p.setInvestState(state ? "모집중" : "모집완료");
-
-		}
-		return products;
-	}
-
-	public List<Map<String, Object>> getInvests(int userId){
-		List<Map<String, Object>> returnMap = new ArrayList<Map<String,Object>>();
+	@Transactional(readOnly = true)
+	public List<InvestResponseVO> getInvests(int userId){
+		List<InvestResponseVO> investResponseVOs = new ArrayList<>();
+		
 		List<Invest> invests = investRepository.findByUserId(userId);
 		for(Invest i : invests) {
+			Product p = i.getProduct();
 			
-			Product p = productRepository.findById(i.getProductId()).get();
+			InvestResponseVO investResponseVO = InvestResponseVO.builder()
+					.amount(i.getAmount())
+					.investedAt(i.getInvestedAt())
+					.productId(p.getProductId())
+					.title(p.getTitle())
+					.totalInvestingAmount(p.getTotalInvestingAmount())
+					.build();
 			
-			Map<String, Object> inputMap = new HashMap<String, Object>();
-			inputMap.put("productId", p.getProductId());
-			inputMap.put("title", p.getTitle());
-			inputMap.put("totalInvestingAmount", p.getTotalInvestingAmount());
-			inputMap.put("amount", i.getAmount());
-			inputMap.put("investedAt", i.getInvestedAt());
-			
-			returnMap.add(inputMap);
+			investResponseVOs.add(investResponseVO);
 		}
 		
-		return returnMap;
+		return investResponseVOs;
 	}
 	
 	@Transactional
@@ -113,12 +68,9 @@ public class InvestService {
 		}
 		int totalAmount = product.getTotalInvestingAmount();
 
-		List<Invest> invests = investRepository.findByProductId(productId);
-		int subAmount = 0;
-		for (Invest i : invests) {
-			subAmount += i.getAmount();
-		}
-
+		Map<String, Object> investMap = investRepository.findSubAmountByProductId(productId);
+		int subAmount = investMap.get("amount") == null ? 0 : (int) investMap.get("amount");
+		
 		if (totalAmount <= subAmount) {
 			return makeReturnMessage(ReturnMessages.E003);
 		}
@@ -131,7 +83,7 @@ public class InvestService {
 		Invest invest = new Invest();
 		invest.setAmount(investRequestVO.getAmount());
 		invest.setInvestedAt(Date.from(ZonedDateTime.now().toInstant()));
-		invest.setProductId(productId);
+		invest.setProduct(product);
 		invest.setUserId(userId);
 		invest = investRepository.save(invest);
 		logger.debug("insert invest : {}", invest.toString());

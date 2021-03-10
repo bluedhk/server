@@ -8,6 +8,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Transient;
 
 import com.sun.istack.NotNull;
 
@@ -34,8 +35,11 @@ public class Product {
 	@NotNull
 	private Date finishedAt;
 		
+	@Transient
 	private int investCount;
+	@Transient
 	private int investSubTotal;
+	@Transient
 	private String investState;
 	
 	@Override

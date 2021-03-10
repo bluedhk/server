@@ -1,0 +1,2 @@
+insert into product(product_id, title, total_investing_amount, started_at, finished_at) values (1, '개인신용 포트폴리오', 1000, NOW(), DATEADD('DAY',1, NOW()));
+insert into product(product_id, title, total_investing_amount, started_at, finished_at) values (2, '부동산 포트폴리오', 10000000, NOW(), DATEADD('DAY',1, NOW()));
