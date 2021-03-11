@@ -36,8 +36,11 @@ class KakaopayserverApplicationTests {
 	
 	@SuppressWarnings("deprecation")
 	@Test
-	@Order(3)
-	public void getProducts() throws JsonProcessingException, Exception {
+	@Order(1)
+	public void getProductsTest() throws JsonProcessingException, Exception {
+		/**
+		 * 전체 투자 상품 조회
+		 */
 		HttpHeaders httpHeaders = new HttpHeaders();
 		httpHeaders.add("X-USER-ID", String.valueOf(1));
 		
@@ -50,17 +53,20 @@ class KakaopayserverApplicationTests {
 			.andExpect(status().isOk());
 	}
 	
+	
 	@SuppressWarnings("deprecation")
-//	@Test
+	@Test
 	@Order(2)
-	public void getInvest() throws JsonProcessingException, Exception {
-		HttpHeaders httpHeaders = new HttpHeaders();
-		httpHeaders.add("X-USER-ID", String.valueOf(1));
-		
+	public void makeInvestTest() throws JsonProcessingException, Exception {
 		/**
+		 * 투자하기
+		 */
 		InvestRequestVO request = new InvestRequestVO();
 		request.setAmount(500);
 		request.setProductId((long) 1);
+		
+		HttpHeaders httpHeaders = new HttpHeaders();
+		httpHeaders.add("X-USER-ID", String.valueOf(1));
 		
 		mockMvc.perform(post("/invest")
 				.contentType(MediaType.APPLICATION_JSON)
@@ -70,7 +76,18 @@ class KakaopayserverApplicationTests {
 			).andDo(print())
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("code").value("E000"));
-		*/
+	}
+	
+	@SuppressWarnings("deprecation")
+	@Test
+	@Order(3)
+	public void getInvestTest() throws JsonProcessingException, Exception {
+		/**
+		 * 내 투자상품 조회하기
+		 */
+		HttpHeaders httpHeaders = new HttpHeaders();
+		httpHeaders.add("X-USER-ID", String.valueOf(1));
+		
 		mockMvc.perform(get("/invest")
 				.contentType(MediaType.APPLICATION_JSON)
 				.characterEncoding("UTF-8")
@@ -82,11 +99,19 @@ class KakaopayserverApplicationTests {
 	
 	@SuppressWarnings("deprecation")
 	@Test
-	@Order(1)
-	public void makeInvest() throws JsonProcessingException, Exception {
+	@Order(4)
+	public void errorCaseTest() throws JsonProcessingException, Exception {
+		/**
+		 * 전체 테스트 케이스 실행
+		 * 총모집금액 1000
+		 * 1. 500 투자 : 성공
+		 * 2. 500 투자 : 성공
+		 * 3. 500 투자 : SOLD OUT
+		 * 4. 투자 내역 조회
+		 */
 		InvestRequestVO request = new InvestRequestVO();
 		request.setAmount(500);
-		request.setProductId((long) 1);
+		request.setProductId((long) 3);
 		
 		HttpHeaders httpHeaders = new HttpHeaders();
 		httpHeaders.add("X-USER-ID", String.valueOf(1));
@@ -100,9 +125,7 @@ class KakaopayserverApplicationTests {
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("code").value("E000"));
 		
-		request = new InvestRequestVO();
 		request.setAmount(2210000);
-		request.setProductId((long) 1);
 		
 		mockMvc.perform(post("/invest")
 				.contentType(MediaType.APPLICATION_JSON)
@@ -113,9 +136,7 @@ class KakaopayserverApplicationTests {
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("code").value("E002"));
 		
-		request = new InvestRequestVO();
 		request.setAmount(500);
-		request.setProductId((long) 1);
 		
 		mockMvc.perform(post("/invest")
 				.contentType(MediaType.APPLICATION_JSON)
@@ -126,9 +147,7 @@ class KakaopayserverApplicationTests {
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("code").value("E000"));
 		
-		request = new InvestRequestVO();
 		request.setAmount(500);
-		request.setProductId((long) 1);
 		
 		mockMvc.perform(post("/invest")
 				.contentType(MediaType.APPLICATION_JSON)

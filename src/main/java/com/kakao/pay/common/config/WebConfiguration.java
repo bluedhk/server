@@ -7,7 +7,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import com.kakao.pay.common.intercepter.CommonIntercepter;
 
 @Configuration
-public class WebConfiguration implements WebMvcConfigurer{
+public class WebConfiguration implements WebMvcConfigurer {
 
 	@Override
 	public void addInterceptors(InterceptorRegistry registry) {

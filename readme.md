@@ -16,8 +16,8 @@
 - product_id : Unique ID로 테이블의 PK
 - title : 투자명 
 - total_investing_amount : 총 투자 모집금액
-- started_at : 투자시작일시
-- finished_at : 투자종료일시
+- started_at : 투자시작일시(index : product_idx1)
+- finished_at : 투자종료일시(index : product_idx2)
 
 **Invest테이블**
 - invest_id : Unique ID로 Invest테이블의 PK
@@ -29,7 +29,7 @@
 **INDEX**
  - Invest 테이블 조회시 현재까지 투자된 금액 조회를 위해서 product_id에 index생성(invest_idx1)
  - Invest 테이블 조회시 자신이 투자한 정보를 조회하기 위해서 user_id에 index생성(invest_idx2)
- 
+ - Product 테이블 조회시 현재까지 현재 시점에 유효한 상품을 조회하기 위해서 index생성(product_idx1, product_idx2)
 ## API
 ### 전체 투자 상품 조회 API
 > GET:/products
@@ -96,7 +96,7 @@
 ]
 
 ## RETURN CODE
-- E000("SUCCESS.", "E000")
-- E001("product is not available.", "E001")
-- E002("Total investment amount is insufficient.", "E002")
-- E003("SOLD OUT.", "E003")
+- E000("SUCCESS.", "E000") : 투자 성공
+- E001("product is not available.", "E001") : 잘못된 product정보 입력 시
+- E002("Total investment amount is insufficient.", "E002") : 총투자금액을 넘어서서 투자 시
+- E003("SOLD OUT.", "E003") : 해당 상품이 SOLD OUT인 경우

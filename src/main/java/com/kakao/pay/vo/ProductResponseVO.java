@@ -9,9 +9,6 @@ import lombok.Data;
 @Data
 @Builder
 public class ProductResponseVO implements Serializable{
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = -2085552688480481424L;
 	private Long productId;
 	private String title;

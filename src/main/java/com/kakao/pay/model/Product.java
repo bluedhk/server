@@ -1,6 +1,5 @@
 package com.kakao.pay.model;
 
-
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -8,6 +7,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Index;
+import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import com.sun.istack.NotNull;
@@ -16,12 +17,16 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Entity(name = "product")
+@Table(indexes = { @Index(name = "product_idx1", columnList = "started_at"),
+		@Index(name = "product_idx2", columnList = "finished_at") })
+@Getter
+@Setter
 public class Product {
 	@Id
 	@Column(length = 20, nullable = false, name = "product_id")
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long productId;
-	
+
 	@Column(name = "title")
 	@NotNull
 	private String title;
@@ -34,14 +39,14 @@ public class Product {
 	@Column(name = "finished_at")
 	@NotNull
 	private Date finishedAt;
-		
+
 	@Transient
 	private int investCount;
 	@Transient
 	private int investSubTotal;
 	@Transient
 	private String investState;
-	
+
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
@@ -58,54 +63,4 @@ public class Product {
 		builder.append("]");
 		return builder.toString();
 	}
-	public Long getProductId() {
-		return productId;
-	}
-	public void setProductId(Long productId) {
-		this.productId = productId;
-	}
-	public String getTitle() {
-		return title;
-	}
-	public void setTitle(String title) {
-		this.title = title;
-	}
-	public int getTotalInvestingAmount() {
-		return totalInvestingAmount;
-	}
-	public void setTotalInvestingAmount(int totalInvestingAmount) {
-		this.totalInvestingAmount = totalInvestingAmount;
-	}
-	public Date getStartedAt() {
-		return startedAt;
-	}
-	public void setStartedAt(Date startedAt) {
-		this.startedAt = startedAt;
-	}
-	public Date getFinishedAt() {
-		return finishedAt;
-	}
-	public void setFinishedAt(Date finishedAt) {
-		this.finishedAt = finishedAt;
-	}
-	public int getInvestCount() {
-		return investCount;
-	}
-	public void setInvestCount(int investCount) {
-		this.investCount = investCount;
-	}
-	public int getInvestSubTotal() {
-		return investSubTotal;
-	}
-	public void setInvestSubTotal(int investSubTotal) {
-		this.investSubTotal = investSubTotal;
-	}
-	public String getInvestState() {
-		return investState;
-	}
-	public void setInvestState(String investState) {
-		this.investState = investState;
-	}
-	
-	
 }
